@@ -1,0 +1,224 @@
+<!doctype html>
+<html class="no-js" lang="">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <title>Rotid</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <link type="text/css" rel="stylesheet" href="./static/css/bootstrap.min.css">
+  <link type="text/css" rel="stylesheet" href="./static/css/style.css">
+  <link type="text/css" rel="stylesheet" href="./static/FlipClock-master/compiled/flipclock.css">
+  <link type="text/css" rel="stylesheet" href="./static/node_modules/tableexport/src/stable/css/tableexport.min.css">
+
+  <script src="./static/js/jquery-3.3.1.min.js"></script>
+  <script src="./static/js/bootstrap.min.js"></script>
+  <script src="./static/js/script.js"></script>
+  <script src="./static/js/flipclock.min.js"></script>
+  <script src="./static/FlipClock-master/compiled/flipclock.min.js"></script>
+  <script src="./static/node_modules/js-xlsx/dist/xlsx.full.min.js"></script>
+  <script src="./static/node_modules/file-saverjs/FileSaver.min.js"></script>
+  <script src="./static/node_modules/tableexport/src/stable/js/tableexport.min.js"></script>
+</head>
+
+<body>
+  <nav class="navbar navbar-dark bg-dark">
+    <a class="navbar-brand" href="#"><span id="navbar-title">Activity tracker</span></a>
+  </nav>
+
+  <div class="container">
+    <div id="form-div">
+      <form id="input-form">
+        <div class="form-group">
+          <label for="form-experiment" class="form-check-label">Experiment</label>
+          <select class="form-control" name="experiment" id="form-experiment" required>
+            <option value="exploration-box">Exploration box</option>
+            <option value="o-maze">O-maze</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="form-specie" class="form-check-label">Specie</label>
+          <input type="text" class="form-control" name="specie" placeholder="Specie" id="form-specie" required>
+        </div>
+        <div class="form-group">
+          <label for="form-id" class="form-check-label">ID</label>
+          <input type="text" class="form-control input-lg" name="id" placeholder="ID" id="form-id">
+        </div>
+        <div class="form-group">
+          <label for="form-sex" class="form-check-label">Sex</label>
+          <select class="form-control" name="sex" id="form-sex" required value="M">
+            <option value="M">Male</option>
+            <option value="F">Female</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="form-dob" class="form-check-label">Date of birth</label>
+          <input type="date" class="form-control" name="dob" id="form-dob" required>
+        </div>
+        <div class="form-group">
+          <label for="form-duration" class="form-check-label">Test duration (seconds)</label>
+          <input type="number" class="form-control" name="duration" id="form-duration" required value="900">
+        </div>
+        <div class="form-group">
+          <label for="form-rpc" class="form-check-label">Rats per cage</label>
+          <input type="number" class="form-control" name="rpc" id="form-rpc" required value="4" min="0">
+        </div>
+        <input class="btn btn-primary" type="submit" value="Submit">
+      </form>
+    </div>
+  </div>
+
+  <div id="container"></div>
+  <div class="row" id="main-container">
+    <div class="col-4">
+      <div class="buttons">
+        <button class="btn btn-lg btn-primary start-timer">Countdown</button>
+        <button class="btn btn-lg btn-danger btn-reset">Reset</button>
+      </div>
+      <table class="table table-sm table-bordered">
+        <tr>
+          <td>Date</td>
+          <td id="table-date"></td>
+        </tr>
+        <tr>
+          <td>Specie</td>
+          <td id="table-specie"></td>
+        </tr>
+        <tr>
+          <td>ID</td>
+          <td id="table-id"></td>
+        </tr>
+        <tr>
+          <td>Sex</td>
+          <td id="table-sex"></td>
+        </tr>
+        <tr>
+          <td>Date of birth</td>
+          <td id="table-dob"></td>
+        </tr>
+        <tr>
+          <td>Age (weeks)</td>
+          <td id="table-age"></td>
+        </tr>
+        <tr>
+          <td>Rats per cage</td>
+          <td id="table-rpc"></td>
+        </tr>
+        <tr>
+          <td>Latency (sec)</td>
+          <td id="table-latency"></td>
+        </tr>
+        <tr>
+          <td>Time Spent (sec)</td>
+          <td id="table-time-spent"></td>
+        </tr>
+
+        <tr class="table-enterings-row experiment-box">
+          <td>Enterings</td>
+          <td class="counter-element" id="table-enterings">0</td>
+        </tr>
+        <tr class="table-objects-row experiment-box">
+          <td>Objects</td>
+          <td class="counter-element" id="table-objects">0</td>
+        </tr>
+        <tr class="table-rearings-row experiment-box">
+          <td>Rearings</td>
+          <td class="counter-element" id="table-rearings">0</td>
+        </tr>
+        <tr class="table-crossings-row experiment-box">
+          <td>Line crossings</td>
+          <td class="counter-element" id="table-crossings">0</td>
+        </tr>
+
+        <tr class="table-open-enterings-row experiment-maze">
+          <td>Open enterings</td>
+          <td class="counter-element" id="table-open-enterings">0</td>
+        </tr>
+        <tr class="table-closed-enterings-row experiment-maze">
+          <td>Closed enterings</td>
+          <td class="counter-element" id="table-closed-enterings">0</td>
+        </tr>
+        <tr class="table-head-dips-row experiment-maze">
+          <td>Head dips</td>
+          <td class="counter-element" id="table-head-dips">0</td>
+        </tr>
+        <tr class="table-saps-row experiment-maze">
+          <td>SAPs</td>
+          <td class="counter-element" id="table-saps">0</td>
+        </tr>
+
+        <tr class="table-approaches-row">
+          <td>Approaches</td>
+          <td class="counter-element" id="table-approaches">0</td>
+        </tr>
+
+        <tr class="total">
+          <td>Total score</td>
+          <td id="table-total">0</td>
+        </tr>
+        <tr>
+          <td>Event</td>
+          <td>Time</td>
+        </tr>
+      </table>
+    </div>
+
+    <div class="col-8 main-panel">
+        <div class= "alert alert-success alert-dismissible fade show" role="alert">
+            Experiment ended!
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div class="row">
+            <div class="col-6 timer-div">
+                <div class="row">
+                    <div class="timer"></div>
+                </div>
+            </div>
+            <div class="col-6 counter-div">
+                <div class="counter"></div>
+            </div>
+            <div class="buttons-line experiment-box">
+                <button class="btn btn-lg btn-success start-counter">Start</button>
+                <button class="btn btn-lg btn-warning pause-counter">Pause</button>
+            </div>
+            <div class="experiment-maze maze-btn-div">
+                <button class="btn btn-lg btn-counter btn-open-entering" disabled>Open Entering</button>
+                <button class="btn btn-lg btn-counter btn-closed-entering" disabled>Closed Entering</button>
+            </div>
+        </div>
+
+        <div class="row experiment-box experiment-box-buttons">
+            <div class="col-6 primary-btn-div">
+                <button class="btn btn-lg btn-counter btn-object" disabled>Object</button>
+                <button class="btn btn-lg btn-counter btn-rearing" disabled>Rearing</button>
+                <button class="btn btn-lg btn-counter btn-crossing" disabled>Line Crossing</button>
+            </div>
+            <div class="col-6 secondary-btn-div">
+              <div class="row">
+                <button class="btn btn-lg btn-counter btn-entering" disabled>Entering</button>
+              </div>
+              <div class="row">
+                <button class="btn btn-lg btn-counter btn-approach" disabled>Approach</button>
+              </div>
+            </div>
+        </div>
+
+        <div class="experiment-maze maze-btn-div">
+            <button class="btn btn-lg btn-counter btn-head-dip" disabled>Head Dip</button>
+            <button class="btn btn-lg btn-counter btn-sap" disabled>SAP</button>
+            <button class="btn btn-lg btn-counter btn-approach" disabled>Approach</button>
+        </div>
+    </div>
+  </div>
+  <footer class="page-footer">
+    <div class="container">
+      <div class="container-fluid text-right">
+        <p>Version: v1.1</p>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

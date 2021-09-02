@@ -1,0 +1,138 @@
+body {
+    background: black;
+    color: white;
+}
+footer {
+    position: fixed;
+    height: 40px;
+    bottom: 0;
+    width: 100%;
+    background: #414141;
+}
+footer p {
+    margin-top: 7px;
+}
+.experiment-box, .experiment-maze {
+    display: none;
+}
+.col-6 {
+    padding: 0; !important;
+}
+#form-div {
+    margin-top: 20px;
+}
+.main-panel {
+    margin-top: 20px;
+}
+.buttons-line .pause-counter {
+    float: right;
+}
+.buttons-line {
+    width: 80%;
+}
+.buttons-line .btn-lg {
+    width: 40%;
+    height: 70%;
+    margin: 0 0 10% 7%;
+    border-radius: 10px;
+    font-size: 26px;
+}
+.buttons {
+    text-align: center;
+}
+.buttons button {
+    margin: 10px 0 10px 6px;
+    border-radius: 5px;
+}
+.btn-reset {
+    margin: auto;
+}
+.btn-default {
+    position: relative;
+    width: 180px;
+    color: white;
+}
+.start-timer {
+    margin: auto;
+}
+.counter-div {
+    margin-left: -50px;
+}
+table {
+    background: black;
+}
+.total {
+    background: white;
+    color: black;
+}
+.alert {
+    margin-right: 20px;
+}
+.secondary-btn-div {
+    padding-left: 50px;
+}
+.maze-btn-div {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+.maze-btn-div .btn {
+    margin: 10px 20px;
+}
+.btn-counter:hover {
+    color: white !important;
+}
+.btn-counter:after {
+    content: "";
+    background: rgba(247,247,247,0.48);
+    display: block;
+    position: absolute;
+    padding-top: 50% !important;
+    padding-bottom: 100% !important;
+    padding-left: 100% !important;
+    margin-left: -20px!important;
+    margin-top: -80px!important;
+    opacity: 0;
+    transition: all 0.1s;
+    width: 10px !important;
+    height: 10px;
+}
+
+.btn-counter:active:after {
+    color: white !important;
+    padding: 0;
+    margin: 0;
+    opacity: 1;
+    transition: 0.4s;
+}
+.btn-counter {
+    border: 3px solid #d8d8d8 !important;
+    color: white;
+    width: 120px;
+    height: 120px;
+    font-size: 1.15rem;
+    line-height: 1.5rem;
+    border-radius: 6rem;
+    margin-top: 10px;
+    position: relative;
+    background-color: #4CAF50;
+    border: none;
+    padding: 20px;
+    text-decoration: none;
+    overflow: hidden;
+    cursor: pointer;
+} .btn-rearing {
+    margin-left: 20px;
+} .btn-crossing {
+    margin-left: 72px;
+} .btn-entering, .btn-open-entering, .table-enterings-row td, .table-open-enterings-row td {
+    background: #00363a;
+} .btn-object, .btn-closed-entering, .table-objects-row td, .table-closed-enterings-row td {
+    background: #7f0000;
+} .btn-rearing, .btn-head-dip, .table-rearings-row td, .table-head-dips-row td {
+    background: #002171;
+} .btn-crossing, .btn-sap, .table-crossings-row td, .table-saps-row td {
+    background: #003300;
+}.btn-approach, .table-approaches-row td {
+    background: #560027;
+}
