@@ -1,13 +1,12 @@
 $(document).ready(function() {
 
-    var tableExport, experiment, specie, id, dob, sex, age, startTime, duration, ratsPerCage,
+    let experiment, specie, id, dob, sex, age, startTime, duration, ratsPerCage,
         approaches, totalScore, enterings, objects, rearings, crossings,
         openEnterings, closedEnterings, headDips, saps;
-    var explorationBoxData = ['Enterings', 'Objects', 'Rearings', 'Line crossings'];
-    var oMazeData = ['Open enterings', 'Closed enterings', 'Head dips', 'SAPs'];
-    var now = $.now()
-    var nowDate = new Date(now);
-    var timer = $('.timer').FlipClock(15 * 60, {
+    const dataExporter = new DataExporter();
+    const now = $.now()
+    const nowDate = new Date(now);
+    const timer = $('.timer').FlipClock(15 * 60, {
         clockFace: 'MinuteCounter',
         countdown: true,
         autoStart: false,
@@ -17,130 +16,36 @@ $(document).ready(function() {
             },
             stop: function() {
                 $('#table-time-spent').html(clock.getTime().time - 1);
-                exportTable();
+                dataExporter.exportData();
                 clock.stop();
                 $('.alert').show();
             }
         }
     });
-    var clock = $('.counter').FlipClock({
+    const clock = $('.counter').FlipClock({
         clockFace: 'MinuteCounter',
         countdown: false,
         autoStart: false
     });
 
-    var increaseTotal = function() {
+    const increaseTotal = function() {
         totalScore++;
         $('#table-total').html(totalScore.toString());
     };
 
-    var startClock = function() {
+    const startClock = function() {
         calculateLatency();
         clock.start();
     };
 
-    var calculateLatency = function() {
-        var latency = $('#table-latency');
+    const calculateLatency = function() {
+        const latency = $('#table-latency');
         if (latency.html() === undefined || latency.html() === '') {
             latency.html(Math.floor(($.now() - startTime) / 1000));
         }
     };
 
-    var exportTable = function() {
-        tableExport = $(".table").tableExport({
-            headers: true,
-            formats: ["xlsx", "csv"],
-            fileName: "experiment",
-            bootstrap: true,
-            exportButtons: true,
-            position: "bottom",
-            ignoreRows: null,
-            ignoreCols: null,
-            trimWhitespace: false,
-            RTL: false,
-            sheetname: "id"
-        });
-        $.fn.tableExport.defaultFileName = id;
-        tableExport.createSheet = function(data, merges) {
-            var ws = {};
-            var range = { s: { c: 10000000, r: 10000000 }, e: { c: 0, r: 0 } };
-            var types = this.typeConfig;
-            for (var R = 0; R !== data.length; ++R) {
-                for (var C = 0; C !== data[R].length; ++C) {
-                    if (range.s.r > R) range.s.r = R;
-                    if (range.s.c > C) range.s.c = C;
-                    if (range.e.r < R) range.e.r = R;
-                    if (range.e.c < C) range.e.c = C;
-                    var cell = data[R][C];
-                    if (!cell || !cell.v) continue;
-                    var cell_ref = XLSX.utils.encode_cell({ c: C, r: R });
-
-                    if (!cell.t) {
-                        if (types.number.assert(cell.v)) cell.t = 'n';
-                        else if (types.boolean.assert(cell.v)) cell.t = 'b';
-                        else if (types.date.assert(cell.v)) cell.t = 'd';
-                        else cell.t = 's';
-                    }
-                    if (cell.t === 'd') {
-                        cell.t = 'n';
-                        cell.z = XLSX.SSF._table[14];
-                    }
-                    ws[cell_ref] = cell;
-                }
-            }
-            ws["!merges"] = merges;
-            if (range.s.c < 10000000) ws["!ref"] = XLSX.utils.encode_range(range);
-            return ws;
-        };
-        try {
-            exportData('xlsx');
-        } catch(e) {
-            console.error(e);
-            try {
-                exportData('csv');
-            } catch(e) {
-                console.error(e);
-            }
-        }
-    };
-
-    var exportData = function(mimeType) {
-        var data = tableExport.getExportData()['tableexport-1'][mimeType];
-        tableExport.export2file(convertTableData(data.data), data.mimeType, id, data.fileExtension);
-    };
-
-    var convertTableData = function(data) {
-        var newData = [];
-        var headers = [];
-        var values = [];
-        var excludedValues;
-        var n_horizontal_data_points = 19;
-        var experiment = $('#form-experiment').val();
-        if (experiment === 'exploration-box') {
-            excludedValues = oMazeData;
-        } else if (experiment === 'o-maze') {
-            excludedValues = explorationBoxData;
-        }
-        for (var i = 0; i < data.length; i++) {
-            if (excludedValues.indexOf(data[i][0].v) > -1) {
-                continue;
-            }
-            if (i < n_horizontal_data_points) {
-                headers.push(data[i][0]);
-                values.push(data[i][1]);
-            } else {
-                if (i === n_horizontal_data_points) {
-                    newData.push(headers);
-                    newData.push(values);
-                    newData.push([]);
-                }
-                newData.push(data[i]);
-            }
-        }
-        return newData;
-    };
-
-    var reset = function() {
+    const reset = function() {
         enterings = objects = rearings = crossings = openEnterings = closedEnterings = headDips = saps = approaches = totalScore = 0;
         $('#table-latency').html('');
         $('#table-time-spent').html('0');
@@ -154,8 +59,8 @@ $(document).ready(function() {
         $('.table .event').remove();
         $('#navbar-title').html('Activity tracker');
 
-        if (tableExport) {
-            tableExport.remove();
+        if (dataExporter.tableExport) {
+            dataExporter.remove();
         }
         if (timer.running) {
             timer.stop();
@@ -168,7 +73,7 @@ $(document).ready(function() {
     };
 
     $('#input-form').submit(function () {
-        var form = $('#input-form');
+        const form = $('#input-form');
         experiment = form.find('select[name=experiment]').val();
         specie = form.find('input[name=specie]').val();
         id = form.find('input[name=id]').val();
@@ -205,8 +110,8 @@ $(document).ready(function() {
     });
 
     $('#form-experiment').change(function() {
-        var experiment = $('#form-experiment').val();
-        var duration;
+        const experiment = $('#form-experiment').val();
+        let duration;
         if (experiment === 'exploration-box') {
             duration = 15 * 60;
         } else if (experiment === 'o-maze') {
@@ -292,13 +197,13 @@ $(document).ready(function() {
         reset();
     });
 
-    var logEvent = function(event, className) {
-        var seconds = timer.original - timer.getTime().getTimeSeconds();
-        var date = new Date(null);
+    const logEvent = function(event, className) {
+        const seconds = timer.original - timer.getTime().getTimeSeconds();
+        let date = new Date(null);
         date.setSeconds(seconds);
-        var time = date.toISOString().substr(14, 5);
-        var lastEvent = $('.table .event:first');
-        var newRow = '<tr class="event ' + className + '"><td>' + event + '</td><td>' + time + '</td></tr>';
+        const time = date.toISOString().substr(14, 5);
+        let lastEvent = $('.table .event:first');
+        const newRow = '<tr class="event ' + className + '"><td>' + event + '</td><td>' + time + '</td></tr>';
         if (lastEvent.length > 0) {
             lastEvent.before(newRow);
         } else {

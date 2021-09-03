@@ -1,10 +1,16 @@
 # Rat Tracker
 Web Application for conducting rat activity experiments
 
+## Experiments
+* Exploration Box
+* O-Maze
+
 ## Changelog
 ##### v1.0
 Initial application
 ##### v1.1
-O-maze experiment
+New experiment: O-maze
 ##### v1.2
-Rats per cage
+New parameter: Rats per cage (RPC)
+##### v1.3
+Data aggregation and export for multiple consecutive experiments
