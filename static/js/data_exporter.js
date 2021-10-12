@@ -1,35 +1,34 @@
 const DataExporter = function () {
     this.tableExport = null;
+    let excludedAttributes = [];
     let experimentHistory = [];
     let eventHistory = [];
     let headers = [];
     let mimeType = 'xlsx';
     const mainSheetName = 'Experiments';
     const n_horizontal_data_points = 19; // Number of rows in the data table before events
-    const explorationBoxData = ['Enterings', 'Objects', 'Rearings', 'Line crossings'];
-    const oMazeData = ['Open enterings', 'Closed enterings', 'Head dips', 'SAPs'];
+    const eventData = new Map();
+    eventData.set('exploration-box', ['Open enterings', 'Closed enterings', 'Head dips', 'SAPs']);
+    eventData.set('o-maze', ['Enterings', 'Objects', 'Rearings', 'Line crossings']);
 
-    let excludedActivities;
-    let experiment = $('#form-experiment').val();
-    switch (experiment) { // Determine the excluded activities based on the experiment
-        case 'exploration-box':
-            excludedActivities = oMazeData;
-            break;
-        case 'o-maze':
-            excludedActivities = explorationBoxData;
-            break;
+    this.setExperiment = function (experiment) {
+        // Determine the excluded attributes based on the experiment
+        excludedAttributes = eventData.get(experiment);
+
+        // Clear the previous headers
+        headers = [];
+
+        // Add the first column of every row in the data table omitting the excluded attributes
+        $("table.table-data tr").each(function () {
+            let value = {v: $(this).find("td:first").text(), t: 's'};
+            if (excludedAttributes.indexOf(value.v) === -1) {
+                headers.push(value); // Add every element in the first column of the data table
+            }
+        });
+        headers.pop(); // Remove 'Event'
     }
 
-    $("table.table-data tr").each(function(){
-        let value = { v: $(this).find("td:first").text(), t: 's' };
-        if (excludedActivities.indexOf(value.v) === -1) {
-            headers.push(value); // Add every element in the first column of the data table
-        }
-    });
-    headers.pop(); // Remove 'Event'
-    experimentHistory.push(headers); // Add the headers as the first row of the experiment history
-
-    this.exportData = function() {
+    this.exportData = function () {
         this.tableExport = $(".table").tableExport({
             headers: true,
             formats: ["xlsx", "csv"],
@@ -50,7 +49,8 @@ const DataExporter = function () {
             storeTableData(table.data);
 
             let wb = new this.tableExport.Workbook();
-            let ws = this.tableExport.createSheet(experimentHistory);
+            let data = [headers].concat(experimentHistory);
+            let ws = this.tableExport.createSheet(data);
             wb.SheetNames.push(mainSheetName);
             wb.Sheets[mainSheetName] = ws;
             eventHistory.forEach((eventSet) => { // Add a sheet for events of every experiment
@@ -60,13 +60,13 @@ const DataExporter = function () {
                 wb.Sheets[sheetName] = ws;
             });
 
-            const wopts = { bookType: 'xlsx', bookSST: false, type: 'binary' };
+            const wopts = {bookType: 'xlsx', bookSST: false, type: 'binary'};
             const wbout = XLSX.write(wb, wopts);
 
             let rawData = this.tableExport.string2ArrayBuffer(wbout);
-            let options = { type: table.mimeType + ";" + this.charset };
+            let options = {type: table.mimeType + ";" + this.charset};
             saveAs(new Blob([rawData], options), fileName + table.fileExtension, true);
-        } catch(e) {
+        } catch (e) {
             console.error('Error exporting data as XLSX', e);
             console.log('Switching to CSV format as default');
             mimeType = 'csv';
@@ -81,7 +81,7 @@ const DataExporter = function () {
         let events = [];
         let values = [];
         for (let i = 0; i < data.length; i++) {
-            if (excludedActivities.indexOf(data[i][0].v) > -1) {
+            if (excludedAttributes.indexOf(data[i][0].v) > -1) {
                 continue;
             }
             if (i < n_horizontal_data_points) {
@@ -92,6 +92,6 @@ const DataExporter = function () {
         }
         const ratId = data[2][1];
         experimentHistory.push(values);
-        eventHistory.push({ 'rat': ratId, 'events': events });
+        eventHistory.push({'rat': ratId, 'events': events});
     };
 }

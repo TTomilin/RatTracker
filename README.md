@@ -14,3 +14,5 @@ New experiment: O-maze
 New parameter: Rats per cage (RPC)
 ##### v1.3
 Data aggregation and export for multiple consecutive experiments
+##### v1.4
+Fixed a bug with spreadsheet headers when switching between experiments

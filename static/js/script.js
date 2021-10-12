@@ -98,13 +98,18 @@ $(document).ready(function() {
         $('#main-container').show();
         $('#form-div').hide();
 
-        if (experiment === 'exploration-box') {
-            $('#navbar-title').html('Exploration Box');
-            $('.experiment-box').show();
-            $('.experiment-box-buttons').css('display', 'flex');
-        } else if (experiment === 'o-maze') {
-            $('#navbar-title').html('O-maze');
-            $('.experiment-maze').show();
+        dataExporter.setExperiment(experiment);
+
+        switch (experiment) {
+            case 'exploration-box':
+                $('#navbar-title').html('Exploration Box');
+                $('.experiment-box').show();
+                $('.experiment-box-buttons').css('display', 'flex');
+                break;
+            case 'o-maze':
+                $('#navbar-title').html('O-maze');
+                $('.experiment-maze').show();
+                break;
         }
         return false;
     });
