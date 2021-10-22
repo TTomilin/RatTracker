@@ -16,3 +16,5 @@ New parameter: Rats per cage (RPC)
 Data aggregation and export for multiple consecutive experiments
 ##### v1.4
 Fixed a bug with spreadsheet headers when switching between experiments
+##### v1.5
+Fixed date format issue on data export
